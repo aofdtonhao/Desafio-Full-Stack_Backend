@@ -8,7 +8,9 @@
 
 export const Desafio1 = ()=> {
   return (
+    <>
       <span>item 1</span>
       <span>item 2</span>
+    </>
   )
 }
