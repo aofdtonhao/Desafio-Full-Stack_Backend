@@ -5,8 +5,12 @@ import com.magalu.desafio.normalizacao.record.NormalizedRecord;
 import com.magalu.desafio.normalizacao.record.OrderRecord;
 import com.magalu.desafio.normalizacao.record.ProductRecord;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DesnormalizedModel {
 
@@ -19,7 +23,6 @@ public class DesnormalizedModel {
     public NormalizedRecord toNormalized() {
         List<OrderRecord> orderRecords = new ArrayList<>();
 
-        String firstLine = desnormalizedRecord.lines().removeFirst();
         desnormalizedRecord.lines().forEach(line -> {
             String pattern = "^(.{10})(.{45})(.{10})(.{10})(.{12})(.{8}).*";
             String[] values = line.replaceAll(pattern, "$1-$2-$3-$4-$5-$6").split("-");
@@ -31,38 +34,59 @@ public class DesnormalizedModel {
             String valueProduct = values[4].trim();
             String dateOrder = values[5].trim();
 
-            orderRecords.add(new OrderRecord(idUser, nameUser, idOrder, idProduct, valueProduct, dateOrder));
+            long userId = Long.parseLong(idUser);
+            long orderId = Long.parseLong(idOrder);
+            long productId = Long.parseLong(idProduct);
+            float productValue = Float.parseFloat(valueProduct);
+            LocalDate orderDate = LocalDate.parse(dateOrder, DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+            orderRecords.add(new OrderRecord(userId, nameUser, orderId, productId, productValue, orderDate));
         });
 
         return toNormalizedRecord(orderRecords);
     }
 
+    // TODO: Imagino que role de refatorar isso, "map" com "groupingBy" se pá, fora que dá pra quebrar em métodos menores, mas na pressa vai assim mesmo
     private NormalizedRecord toNormalizedRecord(List<OrderRecord> orderRecords) {
         List<UserModel> users = new ArrayList<>();
-        List<OrderModel> orders = new ArrayList<>();
-        List<ProductRecord> productRecords = new ArrayList<>();
 
-        float total = 0f;
+        HashSet<Long> userIds = orderRecords
+                .stream()
+                .map(OrderRecord::userId)
+                .collect(Collectors.toCollection(HashSet::new));
 
-        long productId = Long.parseLong(idProduct);
-        float productValue = Float.parseFloat(valueProduct);
-        ProductRecord productRecord = new ProductRecord(productId, productValue);
-        total += productValue;
-        productRecords.add(productRecord);
+        userIds.forEach(userId -> {
+            List<OrderRecord> orderRecordsByUserId = orderRecords
+                    .stream()
+                    .filter(orderRecord -> orderRecord.userId() == userId)
+                    .toList();
 
-        long orderId = Long.parseLong(idOrder);
+            List<OrderModel> orders = new ArrayList<>();
 
-        OrderRecord orderRecord = new OrderRecord(orderId, total, date, productRecords);
+            HashSet<Long> orderIds = orderRecordsByUserId
+                    .stream()
+                    .map(OrderRecord::orderId)
+                    .collect(Collectors.toCollection(HashSet::new));
 
-        OrderModel orderModel = new OrderModel(orderRecord);
+            for (Long orderId : orderIds) {
+                List<OrderRecord> orderRecordsByOrderId = orderRecordsByUserId
+                        .stream()
+                        .filter(orderRecord -> orderRecord.orderId() == orderId)
+                        .toList();
 
-        orders.add(orderModel);
+                List<ProductRecord> products = new ArrayList<>();
+                float total = 0f;
+                for (OrderRecord orderRecordByOrderId : orderRecordsByOrderId) {
+                    total += orderRecordByOrderId.productValue();
+                    products.add(new ProductRecord(orderRecordByOrderId.productId(), orderRecordByOrderId.productValue()));
+                }
 
-        long userId = Long.parseLong(idUser);
+                orders.add(new OrderModel(orderId, total, orderRecordsByOrderId.getFirst().orderDate(), products));
+            };
 
-        UserModel userModel = new UserModel(userId, userName);
-        userModel.setOrders(orders);
-        users.add(userModel);
+            UserModel userModel = new UserModel(userId, orderRecordsByUserId.getFirst().userName(), orders);
+            users.add(userModel);
+        });
 
         return new NormalizedRecord(users);
     }

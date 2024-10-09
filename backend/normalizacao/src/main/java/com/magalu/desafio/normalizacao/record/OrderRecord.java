@@ -1,14 +1,15 @@
 package com.magalu.desafio.normalizacao.record;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public record OrderRecord(
-        String idUser,
-        String nameUser,
-        String idOrder,
-        String idProduct,
-        String valueProduct,
-        String dateOrder
+        long userId,
+        String userName,
+        long orderId,
+        long productId,
+        float productValue,
+        LocalDate orderDate
 ) {
 
 }

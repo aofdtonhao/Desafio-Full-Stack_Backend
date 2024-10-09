@@ -9,7 +9,7 @@ import java.util.List;
 
 public class OrderModel {
 
-    public OrderModel(long id, float total, String date, List<ProductRecord> products) {
+    public OrderModel(long id, float total, LocalDate date, List<ProductRecord> products) {
         setId(id);
         setTotal(total);
         setDate(date);
@@ -44,12 +44,8 @@ public class OrderModel {
         return date;
     }
 
-    public String getFormattedDate() {
-        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    }
-
-    public void setDate(String date) {
-        this.date = LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd"));
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
 
     public List<ProductRecord> getProducts() {
@@ -58,6 +54,10 @@ public class OrderModel {
 
     public void setProducts(List<ProductRecord> products) {
         this.products = products;
+    }
+
+    public String getFormattedDate() {
+        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
 }
