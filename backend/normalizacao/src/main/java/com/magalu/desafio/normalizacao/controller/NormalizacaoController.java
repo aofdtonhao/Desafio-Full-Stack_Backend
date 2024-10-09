@@ -15,7 +15,7 @@ public class NormalizacaoController {
 
     @GetMapping("/normalize")
     public NormalizedRecord normalize(@RequestParam(value = "name", defaultValue = "World") String name) {
-        // TODO: parte mais importante, depois do upload
+        // TODO: parte mais importante, antes do upload
 
         return null;
     }
