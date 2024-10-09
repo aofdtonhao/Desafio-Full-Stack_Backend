@@ -1,10 +1,10 @@
 package com.magalu.desafio.normalizacao.model;
 
-import com.magalu.desafio.normalizacao.record.OrderRecord;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.magalu.desafio.normalizacao.record.ProductRecord;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class OrderModel {
@@ -16,12 +16,18 @@ public class OrderModel {
         setProducts(products);
     }
 
+    @JsonProperty("order_id")
     long id;
 
+    @JsonProperty("total")
+    @JsonFormat(shape=JsonFormat.Shape.STRING)
     float total;
 
+    @JsonProperty("date")
+    @JsonFormat(pattern="yyyy-MM-dd")
     LocalDate date;
 
+    @JsonProperty("products")
     List<ProductRecord> products;
 
     public long getId() {
@@ -54,10 +60,6 @@ public class OrderModel {
 
     public void setProducts(List<ProductRecord> products) {
         this.products = products;
-    }
-
-    public String getFormattedDate() {
-        return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
 
 }

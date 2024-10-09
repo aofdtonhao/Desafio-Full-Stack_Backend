@@ -3,6 +3,7 @@ package com.magalu.desafio.normalizacao.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.magalu.desafio.normalizacao.record.DesnormalizedRecord;
 import com.magalu.desafio.normalizacao.record.NormalizedRecord;
 import org.junit.jupiter.api.Test;
@@ -13,6 +14,54 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DesnormalizedModelTest {
+
+    private static final String EXPECTED_JSON =
+            "{\n" +
+            "  \"users\": [\n" +
+            "    {\n" +
+            "      \"user_id\": 1,\n" +
+            "      \"name\": \"Zarelli\",\n" +
+            "      \"orders\": [\n" +
+            "        {\n" +
+            "          \"order_id\": 123,\n" +
+            "          \"total\": \"1024.48\",\n" +
+            "          \"date\": \"2021-12-01\",\n" +
+            "          \"products\": [\n" +
+            "            {\n" +
+            "              \"product_id\": 111,\n" +
+            "              \"value\": \"512.24\"\n" +
+            "            },\n" +
+            "            {\n" +
+            "              \"product_id\": 122,\n" +
+            "              \"value\": \"512.24\"\n" +
+            "            }\n" +
+            "          ]\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    },\n" +
+            "    {\n" +
+            "      \"user_id\": 2,\n" +
+            "      \"name\": \"Medeiros\",\n" +
+            "      \"orders\": [\n" +
+            "        {\n" +
+            "          \"order_id\": 12345,\n" +
+            "          \"total\": \"512.48\",\n" +
+            "          \"date\": \"2020-12-01\",\n" +
+            "          \"products\": [\n" +
+            "            {\n" +
+            "              \"product_id\": 111,\n" +
+            "              \"value\": \"256.24\"\n" +
+            "            },\n" +
+            "            {\n" +
+            "              \"product_id\": 122,\n" +
+            "              \"value\": \"256.24\"\n" +
+            "            }\n" +
+            "          ]\n" +
+            "        }\n" +
+            "      ]\n" +
+            "    }\n" +
+            "  ]\n" +
+            "}";
 
     @Test
     void toNormalizedTest() throws JsonProcessingException {
@@ -28,10 +77,11 @@ class DesnormalizedModelTest {
 
         NormalizedRecord normalizedRecord = desnormalizedModel.toNormalized();
 
-        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-        String json = ow.writeValueAsString(normalizedRecord);
+        ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
+        ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
+        String normalizedJson = objectWriter.writeValueAsString(normalizedRecord);
 
-        assertEquals(desnormalizedModel.toNormalized().toString(), json);
+        assertEquals(objectMapper.readTree(EXPECTED_JSON), objectMapper.readTree(normalizedJson));
     }
 
 }

@@ -1,13 +1,18 @@
 package com.magalu.desafio.normalizacao.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 public class UserModel {
 
+    @JsonProperty("user_id")
     long id;
 
+    @JsonProperty("name")
     String name;
 
+    @JsonProperty("orders")
     List<OrderModel> orders;
 
     public UserModel(long id, String name) {

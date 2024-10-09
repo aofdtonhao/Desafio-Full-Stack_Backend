@@ -27,7 +27,7 @@ class OrderModelTest {
         assertEquals(12345, orderModel.id);
         assertEquals(512.48f, orderModel.total);
         assertEquals(2, orderModel.products.size());
-        assertEquals("2020-12-01", orderModel.getFormattedDate());
+        assertEquals("2020-12-01", orderModel.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
     }
 
 }

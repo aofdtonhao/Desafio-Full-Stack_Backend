@@ -75,6 +75,7 @@ public class DesnormalizedModel {
                         .toList();
 
                 List<ProductRecord> products = new ArrayList<>();
+                // TODO: se sobrar tempo, transformar em BigDecimal
                 float total = 0f;
                 for (OrderRecord orderRecordByOrderId : orderRecordsByOrderId) {
                     total += orderRecordByOrderId.productValue();

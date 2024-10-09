@@ -20,7 +20,7 @@ class UserModelTest {
         products.add(productRecord1);
         products.add(productRecord2);
 
-        LocalDate orderDate = LocalDate.parse("2021-12-01", DateTimeFormatter.ofPattern("yyyyMMdd"));
+        LocalDate orderDate = LocalDate.parse("20211201", DateTimeFormatter.ofPattern("yyyyMMdd"));
         OrderModel orderModel = new OrderModel(123, 1024.48f, orderDate, products);
         List<OrderModel> orders = new ArrayList<>();
         orders.add(orderModel);

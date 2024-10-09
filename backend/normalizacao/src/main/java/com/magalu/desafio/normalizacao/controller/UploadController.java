@@ -11,15 +11,15 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 public class UploadController {
 
-    private final StorageService storageService;
+    //private final StorageService storageService;
 
-    @Autowired
-    public UploadController(StorageService storageService);
+    //@Autowired
+    //public UploadController(StorageService storageService);
 
     @PostMapping("/upload")
     public String upload(@RequestParam("arquivo") MultipartFile arquivo,
                                  RedirectAttributes redirectAttributes) {
-        storageService.store(arquivo);
+        //storageService.store(arquivo);
         redirectAttributes.addFlashAttribute("message",
                 "Upload com sucesso: " + arquivo.getOriginalFilename() + "!");
 
