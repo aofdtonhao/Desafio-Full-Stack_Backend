@@ -3,6 +3,8 @@ package com.magalu.desafio.normalizacao.model;
 import com.magalu.desafio.normalizacao.record.ProductRecord;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,20 +14,23 @@ class UserModelTest {
 
     @Test
     void userModelTest() {
-        UserModel userModel = new UserModel(1, "Zarelli", orders1);
-
         ProductRecord productRecord1 = new ProductRecord(111, 512.24f);
         ProductRecord productRecord2 = new ProductRecord(122, 512.24f);
+        List<ProductRecord> products = new ArrayList<>();
+        products.add(productRecord1);
+        products.add(productRecord2);
 
-        List<ProductRecord> products1 = new ArrayList<>();
-        products1.add(productRecord1);
-        products1.add(productRecord2);
+        LocalDate orderDate = LocalDate.parse("2021-12-01", DateTimeFormatter.ofPattern("yyyyMMdd"));
+        OrderModel orderModel = new OrderModel(123, 1024.48f, orderDate, products);
+        List<OrderModel> orders = new ArrayList<>();
+        orders.add(orderModel);
 
-        OrderModel orderModel1 = new OrderModel(123, 1024.48f, "2021-12-01", products1);
-        List<OrderModel> orders1 = new ArrayList<>();
-        orders1.add(orderModel1);
+        UserModel userModel = new UserModel(1, "Zarelli", orders);
 
-        assertEquals(userModel, userModel);
+        assertEquals(1, userModel.id);
+        assertEquals("Zarelli", userModel.name);
+        assertEquals(1, userModel.getOrders().size());
+        assertEquals(2, userModel.getOrders().getFirst().products.size());
     }
 
 }
