@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/upload")
 public class FileUploadController {
+    // https://spring.io/guides/gs/uploading-files
 
     private final StorageService storageService;
 
@@ -30,7 +31,6 @@ public class FileUploadController {
 
     @GetMapping("/")
     public String listUploadedFiles(Model model) throws IOException {
-
         model.addAttribute("files", storageService.loadAll().map(
                         path -> MvcUriComponentsBuilder.fromMethodName(FileUploadController.class,
                                 "serveFile", path.getFileName().toString()).build().toUri().toString())
@@ -42,7 +42,6 @@ public class FileUploadController {
     @GetMapping("/files/{filename:.+}")
     @ResponseBody
     public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
-
         Resource file = storageService.loadAsResource(filename);
 
         if (file == null)
@@ -55,12 +54,13 @@ public class FileUploadController {
     @PostMapping("/")
     public String handleFileUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {
-
         storageService.store(file);
         redirectAttributes.addFlashAttribute("message",
                 "You successfully uploaded " + file.getOriginalFilename() + "!");
 
-        return "redirect:/";
+        // TODO: dá pra fazer de um jeito mais bonito isso aqui
+        return "redirect:/normalizacao/normalize?file=" +
+                this.storageService.getRootLocation() + "/" + file.getOriginalFilename();
     }
 
     @ExceptionHandler(StorageFileNotFoundException.class)

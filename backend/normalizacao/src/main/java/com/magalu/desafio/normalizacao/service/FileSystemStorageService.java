@@ -111,4 +111,8 @@ public class FileSystemStorageService implements StorageService {
 		}
 	}
 
+	@Override
+	public Path getRootLocation() {
+		return rootLocation;
+	}
 }

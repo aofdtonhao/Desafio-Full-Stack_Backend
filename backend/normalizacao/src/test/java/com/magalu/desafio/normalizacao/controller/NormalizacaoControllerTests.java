@@ -13,22 +13,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 @SpringBootTest
 @AutoConfigureMockMvc
-class NormalizacaoControllerTest {
+class NormalizacaoControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private NormalizacaoController normalizacaoController;
-
-    @Test
-    void contextLoads() throws Exception {
-        assertThat(normalizacaoController).isNotNull();
-    }
 
     @Test
     void normalizeShouldReturnDefault() throws Exception {

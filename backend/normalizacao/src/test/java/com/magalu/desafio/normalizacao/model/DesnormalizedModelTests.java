@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DesnormalizedModelTest {
+class DesnormalizedModelTests {
 
     // https://github.com/misaku/Desafio-Full-Stack/blob/main/BACK-END.md#sa%C3%ADda-de-dados
     private static final String EXPECTED_JSON =

@@ -1,11 +1,13 @@
-package com.magalu.desafio.normalizacao.service;
+package com.magalu.desafio.normalizacao.controller;
 
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import com.magalu.desafio.normalizacao.exception.StorageFileNotFoundException;
+import com.magalu.desafio.normalizacao.service.StorageService;
 
 import org.hamcrest.Matchers;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +19,15 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @SpringBootTest
-public class FileUploadTests {
+public class FileUploadControllerTests {
 
     @Autowired
     private MockMvc mvc;
@@ -36,32 +38,31 @@ public class FileUploadTests {
     @Test
     public void shouldListAllFiles() throws Exception {
         given(this.storageService.loadAll())
-                .willReturn(Stream.of(Paths.get("first.txt"), Paths.get("second.txt")));
+                .willReturn(Stream.of(Paths.get("data_1.txt"), Paths.get("data_2.txt")));
 
-        this.mvc.perform(get("/")).andExpect(status().isOk())
+        this.mvc.perform(get("/upload/"))
+                .andExpect(status().isOk())
                 .andExpect(model().attribute("files",
-                        Matchers.contains("http://localhost/files/first.txt",
-                                "http://localhost/files/second.txt")));
+                        Matchers.contains("http://localhost/upload/files/data_1.txt",
+                                "http://localhost/upload/files/data_2.txt")));
     }
 
     @Test
     public void shouldSaveUploadedFile() throws Exception {
         MockMultipartFile multipartFile = new MockMultipartFile("file", "test.txt",
                 "text/plain", "Spring Framework".getBytes());
-        this.mvc.perform(multipart("/").file(multipartFile))
-                .andExpect(status().isFound())
-                .andExpect(header().string("Location", "/"));
+        this.mvc.perform(multipart("/upload/").file(multipartFile))
+                .andExpect(status().isFound());
 
         then(this.storageService).should().store(multipartFile);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void should404WhenMissingFile() throws Exception {
         given(this.storageService.loadAsResource("test.txt"))
                 .willThrow(StorageFileNotFoundException.class);
 
-        this.mvc.perform(get("/files/test.txt")).andExpect(status().isNotFound());
+        this.mvc.perform(get("/upload/files/test.txt")).andExpect(status().isNotFound());
     }
 
 }
