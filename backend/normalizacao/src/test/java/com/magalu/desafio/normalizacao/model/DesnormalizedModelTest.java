@@ -1,6 +1,10 @@
 package com.magalu.desafio.normalizacao.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.magalu.desafio.normalizacao.record.DesnormalizedRecord;
+import com.magalu.desafio.normalizacao.record.NormalizedRecord;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -11,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DesnormalizedModelTest {
 
     @Test
-    void toNormalizedTest() {
+    void toNormalizedTest() throws JsonProcessingException {
         List<String> lines = new ArrayList<>();
         // lines.add("|-userId--|--------------userName----------------------|-orderId-|-prodId--|---value---|-date--|");
         lines.add("0000000002                                     Medeiros00000123450000000111      256.2420201201");
@@ -22,9 +26,12 @@ class DesnormalizedModelTest {
 
         DesnormalizedModel desnormalizedModel = new DesnormalizedModel(desnormalizedRecord);
 
-        desnormalizedModel.toNormalized();
+        NormalizedRecord normalizedRecord = desnormalizedModel.toNormalized();
 
-        assertEquals(desnormalizedModel.toNormalized(), desnormalizedModel.toNormalized());
+        ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+        String json = ow.writeValueAsString(normalizedRecord);
+
+        assertEquals(desnormalizedModel.toNormalized().toString(), json);
     }
 
 }
